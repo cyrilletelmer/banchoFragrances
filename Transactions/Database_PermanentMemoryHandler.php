@@ -8,9 +8,9 @@ class Database_PermanentMemoryHandler implements PermanentMemoryHandler
 		{
 		$this->mPDO = new PDO
 			(
-			'XXX', // host, database
-			'XXX', // user goes here
-			'XXX', // password goes here
+			'---', // host, database
+			'---', // user goes here
+			'---', // password goes here
 			array
 				(
 				PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -20,7 +20,7 @@ class Database_PermanentMemoryHandler implements PermanentMemoryHandler
 		}
 		
 		
-	public function getIngredients(?string $inNoteType):array
+	public function getIngredients(?string $inNoteType, int $inFreqMin = 0):array
 		{
 		$outData = array();
 		$vReqBase = "SELECT * FROM Xproject_ingredients where ";
@@ -31,9 +31,10 @@ class Database_PermanentMemoryHandler implements PermanentMemoryHandler
 			$vNbOfRestrictions++;
 			$vNoteTypeRestriction = " note_type = ? AND ";
 			}
-		$vStmt = $this->mPDO->prepare("SELECT * FROM Xproject_ingredients where $vNoteTypeRestriction 1;");
+		$vStmt = $this->mPDO->prepare("SELECT * FROM Xproject_ingredients where freq> ? AND $vNoteTypeRestriction 1;");
 		
-		$vI = 1;
+		$vI = 2;
+		$vStmt->bindParam(1, $inFreqMin, PDO::PARAM_INT);
 		if($vNoteTypeRestriction!= "")
 			{
 			$vStmt->bindParam($vI, $inNoteType, PDO::PARAM_STR);
@@ -94,10 +95,37 @@ class Database_PermanentMemoryHandler implements PermanentMemoryHandler
 			$vTranslatable->mLanguage = $vRow["Language"];
 			$vTranslatable->mText = $vRow["TextStr"];
 			$outData[$vi]=$vTranslatable;
-
+			$vi++;
 			}
 		return $outData;
 			
+		}
+		
+	public function getTranslatableAdjectives(int $inIngredientId): array//of Translatable not of Adjective
+		{
+		$outData = array();
+		$vReq = "SELECT * "
+			."FROM Xproject_ingredients "
+			."LEFT JOIN Xproject_adjectives ON Xproject_ingredients.iID = Xproject_adjectives.ingredient_id "
+			."JOIN Xproject_translatables ON Xproject_adjectives.adjective = Xproject_translatables.TextID "
+			."WHERE Xproject_ingredients.iID = ? "
+			."ORDER BY Xproject_adjectives.aID";
+		$vStmt = $this->mPDO->prepare($vReq);
+		//echo "id $inTextID";
+		$vi=0;
+		$vStmt->execute([$inIngredientId]);
+		foreach ($vStmt as $vRow)
+			{
+				
+			$vTranslatable = new Translatable();
+			$vTranslatable->mTranslatableID = $vRow["TranslatableID"];
+			$vTranslatable->mTextID = $vRow["TextID"];
+			$vTranslatable->mLanguage = $vRow["Language"];
+			$vTranslatable->mText = $vRow["TextStr"];
+			$outData[$vi]=$vTranslatable;
+			$vi++;
+			}
+		return $outData;	
 		}
 		
 		
