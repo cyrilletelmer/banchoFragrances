@@ -5,11 +5,13 @@ class IngredientDisplayable {
 	
 	private Ingredient $mIngredient;
 	private array $mTranslatableNames;
+	private  ?array $mTranslatableAdjectives;
 	
-	public function __construct(Ingredient $inIngredient, ?array $inTranslatableNames, ?array $inTranslatableAdjectives)
+	public function __construct(Ingredient $inIngredient, array $inTranslatableNames, ?array $inTranslatableAdjectives)
 		{
 		$this->mIngredient = $inIngredient;
 		$this->mTranslatableNames = $inTranslatableNames;
+		$this->mTranslatableAdjectives = $inTranslatableAdjectives;
 		}
 		
 	
@@ -24,7 +26,7 @@ class IngredientDisplayable {
 				$vNameDicTionnary[$vTranslatable->mLanguage] = $vTranslatable->mText;
 				}
 			}
-		$vAdjectives = array();
+		$vAdjectives = $this->extractTranslatableAdjectives($this->mTranslatableAdjectives);
 		return array
 			(
 			IngredientDisplayableFields::ID => $vIngredient->mIngredientID,
@@ -34,6 +36,33 @@ class IngredientDisplayable {
 			IngredientDisplayableFields::FREQ =>$vIngredient->mFreq,
 			IngredientDisplayableFields::ADJECTIVES =>$vAdjectives
 			);
+		}
+	
+	private function extractTranslatableAdjectives(?array $inAdjectives)
+		{
+		$outData = array();
+		if(isset($inAdjectives))
+			{
+			$vPreviousTranslatable = null;
+			$vi = 0;
+			foreach($inAdjectives as $vTranslatable)
+				{
+				//echo "adj ".$vTranslatable->mText."<br>";
+				$vNewAdjective = isset($vPreviousTranslatable) &&  $vTranslatable->mTextID != $vPreviousTranslatable->mTextID;
+				if($vNewAdjective)
+					{
+					$vi++;
+					$outData[$vi] = array();
+					}
+				if(!isset($outData[$vi]))
+					$outData[$vi] = array();
+				
+				$outData[$vi][$vTranslatable->mLanguage]= $vTranslatable->mText;
+				$vPreviousTranslatable = $vTranslatable;
+				//echo "adj ".$vTranslatable->mText." vi ".$vi." new ".$vNewAdjective."<br>";
+				}
+			}
+		return $outData;
 		}
 }
 
