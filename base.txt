@@ -1,0 +1,77 @@
+CREATE TABLE Xproject_ingredients
+(
+iID int PRIMARY KEY AUTO_INCREMENT,
+note_type varchar(255),
+name BIGINT,
+blending_factor double,
+freq double
+);
+
+CREATE TABLE Xproject_correlations
+(
+cID int PRIMARY KEY AUTO_INCREMENT,
+ingredient_one int,
+ingredient_two int,
+correlation_type varchar(255),
+value double
+);
+
+CREATE TABLE Xproject_adjectives
+(
+aID int PRIMARY KEY AUTO_INCREMENT,
+ingredient_id int,
+adjective BIGINT
+);
+
+SELECT * FROM Xproject_correlations
+LEFT JOIN Xproject_ingredients ON Xproject_correlations.ingredient_two = Xproject_ingredients.iID
+WHERE Xproject_correlations.ingredient_one = 2 AND Xproject_correlations.correlation_type = "BASIC"
+ORDER BY Xproject_correlations.value DESC LIMIT 10
+
+CREATE TABLE Xproject_translatables
+(
+TranslatableID int PRIMARY KEY AUTO_INCREMENT,
+TextID BIGINT,
+Language varchar(255),
+TextStr Text
+);
+
+Requête:
+GET /ingredients/[id]/?[note_type=<BASE,MIDDLE,TOP>]
+
+Réponse:
+JSONARRAY(
+{
+"id":INT,
+"noteType":STR,
+"name":STRDIC(language,STR),
+"blendingFactor": DOUBLE,
+"freq": DOUBLE
+"adjectives" : JSONARAY(STRDIC)
+}
+)
+
+Requête:
+GET /smell/?ingredients=INTARRAY(1,2,3...)&
+[amounts=INTARRAY(1,2,3...)]&
+[correlation_type=<BASIC,SIGNIFICATIVE,UNGENDERED>]&
+[warning_strategy=STRARRAY(PYRAMIDAL_BALANCE_WARNINGS,BASIC_WARNINGS,INDIVIDUAL_DOSING_WARNINGS...)]&
+[freq_min=INT]
+
+Réponse:
+{
+"ingredients":JSONARRAYOF(INGREDIENTS),
+"averageCorrelations":JSONARRAYOF({"type":STR,"value":DOUBLE})
+"warnings" : JSONARRAYOF({"type":STR(<EXCESS_AMOUNT,LACK_BASE,LACK_MIDDLE,LACK_TOP>), "targetOfWarning":OPTINT})
+}
+
+Requête:
+GET /suggestion/?ingredients=INTARRAY(1,2,3...)&[amounts=INTARRAY(1,2,3...)] &
+note_type=<BASE,MIDDLE,TOP>&
+[desirability_type=<BASIC,SIGNIFICATIVE,UNGENDERED>]&
+[freq_min=INT]
+
+Réponse:
+{
+"NotesSuggestions":JSONARRAYOF({"desirabilityValue":FLOAT,"ingredient":INGREDIENT,"suggestedAmount":INT})
+}

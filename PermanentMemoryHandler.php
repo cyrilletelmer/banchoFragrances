@@ -6,7 +6,7 @@ interface PermanentMemoryHandler
 	{
 	
 	
-	public function getIngredients(?string $inNoteType):array;
+	public function getIngredients(?string $inNoteType, int $inFreqMin = 0):array;
 	
 	public function getIngredientById(int $inID): ?Ingredient;
 	
@@ -15,6 +15,8 @@ interface PermanentMemoryHandler
 	public function getCorrelationsFromIngredientID(int $inIngredientID) :array;
 	
 	public function getCorrelation(int $inIngredientID1, int $inIngredientID2) : Correlation;
+	
+	public function getTranslatableAdjectives(int $inIngredientId): array;//of Translatable not of Adjective
 	}
 	
 

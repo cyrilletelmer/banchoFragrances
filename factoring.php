@@ -146,5 +146,30 @@ function factory_CorrelationCalculator
 	return new CorrelationCalculator($inIngredients,$inAmounts,$inCorrelationType,$inPMH,$inWeightingStrategy);
 	}
 
+	
+function factory_WarningIssuer(array $inIngredients, array $inAmounts, string $inWarningStrategy = "BASIC_WARNINGS")
+	{
+	return factory_WarningIssuerWithAdditionalStrategy(new WarningIssuer($inIngredients,$inAmounts), $inWarningStrategy);
+	}
+	
+//compose warning issuers using decorators
+function factory_WarningIssuerWithAdditionalStrategy(WarningIssuer $inWarningIssuerBase, string $inAdditionalStrategy)
+	{
+	switch($inAdditionalStrategy)
+		{
+		case "BASIC_WARNINGS" :
+			return new BasicPyramidalCheckWarningIssuer($inWarningIssuerBase);
+			break;
+		case "PYRAMIDAL_BALANCE_WARNINGS" :
+			return new PyramidalBalanceWarningIssuer($inWarningIssuerBase);
+			break;
+		case "INDIVIDUAL_DOSING_WARNINGS" :
+			return new IndividualDosingWarningIssuer($inWarningIssuerBase);
+			break;
+		default:
+			return $inWarningIssuerBase;
+			break;
+		}
+	}
 
 ?>
