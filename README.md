@@ -47,15 +47,22 @@ This call analyses how much a recipe is "consistent" ie similar in statistical t
 
 
 
-GET /smell/?ingredients=INTARRAY(1,2,3...)&[amounts=INTARRAY(1,2,3...)]&[correlation_type=<BASIC,SIGNIFICATIVE,UNGENDERED>]
+GET 
+/smell/?
+[amounts=INTARRAY(1,2,3...)]&
+[correlation_type=<BASIC|SIGNIFICATIVE|UNGENDERED>]&
+[warning_strategy=STRARRAY(PYRAMIDAL_BALANCE_WARNINGS,BASIC_WARNINGS,INDIVIDUAL_DOSING_WARNINGS...)]&
+[freq_min=INT]
+
+Example: GET smell/?ingredients=16,7,12&amounts=1,4,1&warning_strategy=INDIVIDUAL_DOSING_WARNINGS,PYRAMIDAL_BALANCE_WARNINGS
+
 
 Answer (JSON "data" field) : 
-
 
 {
 "ingredients":JSONARRAYOF(INGREDIENTS),
 "averageCorrelations":JSONARRAYOF({"type":STR,"value":DOUBLE})
-"warnings" : JSONARRAYOF({"type":STR(<EXCESS_AMOUNT,LACK_BASE,LACK_MIDDLE,LACK_TOP>), "targetOfWarning":OPTINT})
+"warnings" : JSONARRAYOF({"type":STR(<EXCESS_AMOUNT|LACKS_BASE|LACKS_MIDDLE|LACKS_TOP>), "targetOfWarning":OPTINT})
 }
 
 
