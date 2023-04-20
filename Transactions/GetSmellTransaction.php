@@ -11,12 +11,14 @@ class GetSmellTransaction extends Transaction
 	public function onExecute(array $inReqParameters, ?int $inResourceID): array
 		{
 		$vOutArray 				= array();
+		$vWarningsStrategies	= array();
 		$vIngredientIDsArray 	= explode(",",$inReqParameters[GetSmellParameters::INGREDIENTS]);
 		$vAmountArray 			= null;
 		if(isset($inReqParameters[GetSmellParameters::AMOUNTS]))
 			$vAmountArray = explode(",",$inReqParameters[GetSmellParameters::AMOUNTS]);
+		if(isset($inReqParameters[GetSmellParameters::WARNING_STRATEGY]))
+			$vWarningsStrategies = explode(",",$inReqParameters[GetSmellParameters::WARNING_STRATEGY]);
 			
-		
 		$vCorrelationType 				= "BASIC";
 		$vIngredientArray 				= array();
 		$vIngredientsDisplayableArray 	= array();
@@ -28,7 +30,8 @@ class GetSmellTransaction extends Transaction
 				{
 				$vIngredientArray[$vi] 				= $vIngredient;
 				$vTranslatableNames 				= $this->getPermanentMemoryHandler()->getTranslatablesByTextID($vIngredient->mNameID);
-				$vIngredientDisplayable 			= new IngredientDisplayable($vIngredient,$vTranslatableNames,null);
+				$vTranslatableAdjectives 			= $this->getPermanentMemoryHandler()->getTranslatableAdjectives($vIngredient->mIngredientID);
+				$vIngredientDisplayable 			= new IngredientDisplayable($vIngredient,$vTranslatableNames,$vTranslatableAdjectives);
 				$vIngredientsDisplayableArray[$vi] 	= $vIngredientDisplayable->getDisplay();
 				$vi++;
 				}
@@ -45,7 +48,11 @@ class GetSmellTransaction extends Transaction
 			}
 		$vWeightingStrategy		= factory_CorrelationWeightingStrategy();
 		$vCorrelationCalculator = factory_CorrelationCalculator($vIngredientArray, $vAmountArray,$vCorrelationType, $this->getPermanentMemoryHandler(),$vWeightingStrategy);
-		$vWarningsIssuer		= new WarningIssuer($vIngredientArray,$vAmountArray);
+		$vWarningsIssuer		= factory_WarningIssuer($vIngredientArray,$vAmountArray, "BASIC_WARNINGS");
+		foreach($vWarningsStrategies as $vStrategy)
+			{
+			$vWarningsIssuer = factory_WarningIssuerWithAdditionalStrategy($vWarningsIssuer,$vStrategy);
+			}
 		$vWarningsList			= $vWarningsIssuer->calculateWarnings();
 		$vArrayOfCorr 			= array("type"=>"BASIC","value"=> $vCorrelationCalculator->getCorrelation());
 		$outData 				= array
@@ -80,13 +87,14 @@ class GetSmellParameters
 	{
 	const INGREDIENTS = "ingredients";
 	const AMOUNTS = "amounts";
+	const WARNING_STRATEGY ="warning_strategy";
 	}
 	
 class GetSmellParameterCheck implements ParameterChecker
 	{
 	public function checkRequestParametersCompletion(array $inParameters, ?int $inResID): string
 		{
-		$vArrayRegEx = "/^(?:\d+,{0,1})+$/i";
+		$vArrayRegEx = "/^(?:\d+,)*\d+$/i";
 		if(isset($inResID) )
 			return "GET SMELL does not accept resource id";
 		else if(!isset($inParameters[GetSmellParameters::INGREDIENTS]) )
