@@ -84,3 +84,8 @@ Answer (JSON "data" field) :
 "NotesSuggestions":JSONARRAYOF({"desirabilityValue":FLOAT,"ingredient":INGREDIENT,"suggestedAmount":INT})
 }
 
+
+
+# quick tool to create a fragrance using this API:
+
+https://avezvouslesharingan.fr/perfumeUI/cli.htm
