@@ -122,6 +122,7 @@ include_once("Transactions/Utils/DateHandlerImpl.php");
 include_once("Transactions/Utils/CorrelationCalculator.php");
 include_once("Transactions/Utils/WarningIssuer.php");
 include_once("Transactions/Utils/CorrelationWeightingStrategy.php");
+include_once("Transactions/Utils/AdjectiveIssuer.php");
 
 function factory_DateHandler() : DateHandler
 	{
@@ -170,6 +171,11 @@ function factory_WarningIssuerWithAdditionalStrategy(WarningIssuer $inWarningIss
 			return $inWarningIssuerBase;
 			break;
 		}
+	}
+	
+function factory_AdjectiveIssuer() : AdjectiveIssuer
+	{
+	return new AdjectiveIssuer();
 	}
 
 ?>

@@ -74,7 +74,7 @@ class CorrelationCalculator {
 			$vIndexIngredient2 =0;
 			foreach($this->mIngredients as $vIngredient2)
 				{
-				$vCorrelation 			= $this->mPermanentMemory->getCorrelation($vIngredient1->mIngredientID, $vIngredient2->mIngredientID);
+				$vCorrelation 			= $this->mPermanentMemory->getCorrelation($vIngredient1->mIngredientID, $vIngredient2->mIngredientID, $this->mCorrelationType);
 				$vWeight 				= $this->mWeightingStrategy->calculateWeight($vIngredient1,$vIngredient2,$this->mAmounts[$vIndexIngredient1],$this->mAmounts[$vIndexIngredient2]);
 				$this-> mSumOfWeights += $vWeight;
 				$this->mSumOfCorrelations += $vWeight * $vCorrelation->mValue;
@@ -109,7 +109,7 @@ class CorrelationCalculator {
 		$vIndexIngredient2 =0;
 		foreach($this->mIngredients as $vIngredient2)
 			{
-			$vCorrelation = $this->mPermanentMemory->getCorrelation($inIngredient->mIngredientID, $vIngredient2->mIngredientID);
+			$vCorrelation = $this->mPermanentMemory->getCorrelation($inIngredient->mIngredientID, $vIngredient2->mIngredientID, $this->mCorrelationType);
 			$vWeight = $this->mWeightingStrategy->calculateWeight($inIngredient,$vIngredient2,$vAmount,$this->mAmounts[$vIndexIngredient2]);
 			$outSumOfWeights += $vWeight;
 			$outSumOfCorrelations += $vWeight * $vCorrelation->mValue;

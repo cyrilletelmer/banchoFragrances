@@ -3,42 +3,50 @@
 /** object able to render an Ingredient in the way it will be presented in the answer of the API call*/
 class IngredientDisplayable {
 	
-	private Ingredient $mIngredient;
+	public Ingredient $mIngredient;
 	private array $mTranslatableNames;
-	private  ?array $mTranslatableAdjectives;
+	public  ?array $mTranslatableAdjectives;
+	
+	private ?array $mDisplay;
 	
 	public function __construct(Ingredient $inIngredient, array $inTranslatableNames, ?array $inTranslatableAdjectives)
 		{
 		$this->mIngredient = $inIngredient;
 		$this->mTranslatableNames = $inTranslatableNames;
 		$this->mTranslatableAdjectives = $inTranslatableAdjectives;
+		if(!isset($inTranslatableAdjectives))
+			$this->mTranslatableAdjectives = array();
 		}
 		
 	
 	public function getDisplay() :array
 		{
-		$vIngredient = $this->mIngredient;
-		$vNameDicTionnary = array();
-		if(isset($this->mTranslatableNames))
+		if(!isset($this->mDisplay))
 			{
-			foreach($this->mTranslatableNames as $vTranslatable)
+			$vIngredient = $this->mIngredient;
+			$vNameDicTionnary = array();
+			if(isset($this->mTranslatableNames))
 				{
-				$vNameDicTionnary[$vTranslatable->mLanguage] = $vTranslatable->mText;
+				foreach($this->mTranslatableNames as $vTranslatable)
+					{
+					$vNameDicTionnary[$vTranslatable->mLanguage] = $vTranslatable->mText;
+					}
 				}
+			$vAdjectives = $this->extractTranslatableAdjectives($this->mTranslatableAdjectives);
+			$this->mDisplay = array
+				(
+				IngredientDisplayableFields::ID => $vIngredient->mIngredientID,
+				IngredientDisplayableFields::NOTE_TYPE => $vIngredient->mNoteType,
+				IngredientDisplayableFields::BLENDING_FACTOR =>$vIngredient->mBlendingFactor,
+				IngredientDisplayableFields::NAME => $vNameDicTionnary,
+				IngredientDisplayableFields::FREQ =>$vIngredient->mFreq,
+				IngredientDisplayableFields::ADJECTIVES =>$vAdjectives
+				);
 			}
-		$vAdjectives = $this->extractTranslatableAdjectives($this->mTranslatableAdjectives);
-		return array
-			(
-			IngredientDisplayableFields::ID => $vIngredient->mIngredientID,
-			IngredientDisplayableFields::NOTE_TYPE => $vIngredient->mNoteType,
-			IngredientDisplayableFields::BLENDING_FACTOR =>$vIngredient->mBlendingFactor,
-			IngredientDisplayableFields::NAME => $vNameDicTionnary,
-			IngredientDisplayableFields::FREQ =>$vIngredient->mFreq,
-			IngredientDisplayableFields::ADJECTIVES =>$vAdjectives
-			);
+		return $this->mDisplay;
 		}
 	
-	private function extractTranslatableAdjectives(?array $inAdjectives)
+	private function extractTranslatableAdjectives(?array $inAdjectives) : array
 		{
 		$outData = array();
 		if(isset($inAdjectives))

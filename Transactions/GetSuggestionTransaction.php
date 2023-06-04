@@ -18,6 +18,8 @@ class GetSuggestionTransaction extends Transaction
 		if(isset($inReqParameters[GetSuggestionParameters::FREQ_MIN]))
 			$vMinFreq = $inReqParameters[GetSuggestionParameters::FREQ_MIN];
 		$vCorrelationType 				= "BASIC";
+		if(isset($inReqParameters[GetSuggestionParameters::CORRELATION_TYPE]))
+			$vCorrelationType = $inReqParameters[GetSuggestionParameters::CORRELATION_TYPE];
 		$vIngredientArray 				= array();
 		$vIngredientsDisplayableArray 	= array();
 		$vi=0;
@@ -122,6 +124,7 @@ class GetSuggestionParameters
 	const NOTE_TYPE = "note_type";
 	const AMOUNTS = "amounts";
 	const FREQ_MIN ="freq_min";
+	const CORRELATION_TYPE="correlation_type";
 	}
 
 	
@@ -147,6 +150,8 @@ class GetSuggestionParameterCheck implements ParameterChecker
 			return "amounts list is not well formatted. should be 1,2,3...";
 		else if(isset($inParameters[GetSuggestionParameters::AMOUNTS]) && substr_count($inParameters[GetSuggestionParameters::AMOUNTS],",")!= substr_count($inParameters[GetSuggestionParameters::INGREDIENTS],","))
 			return "amounts and ingredients should have the same size";
+		else if(isset($inParameters[GetSuggestionParameters::CORRELATION_TYPE]) && $inParameters[GetSuggestionParameters::CORRELATION_TYPE]!="BASIC" && $inParameters[GetSuggestionParameters::CORRELATION_TYPE]!="UNGENDERED" && $inParameters[GetSuggestionParameters::CORRELATION_TYPE]!="SIGNIFICATIVE" )
+			return "correlation_type is not among authorized values: BASIC, UNGENDERED, SIGNIFICATIVE";
 		return "";
 		}
 	}

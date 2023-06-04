@@ -44,10 +44,10 @@ JSONARRAY(
 {
 "id":INT,
 "noteType":STR,
-"name":STRDIC(language,STR),
+"name":{"fr":STR, "en":STR,...},
 "blendingFactor": DOUBLE,
 "freq": DOUBLE
-"adjectives" : JSONARAY(STRDIC)
+"adjectives" : JSONARAYOF({"fr":STR, "en":STR,...})
 }
 )
 
@@ -61,17 +61,17 @@ GET /smell/?ingredients=INTARRAY(1,2,3...)&
 Réponse:
 {
 "ingredients":JSONARRAYOF(INGREDIENTS),
-"averageCorrelations":JSONARRAYOF({"type":STR,"value":DOUBLE})
+"averageCorrelations":DICT({"type":STR,"value":DOUBLE})
 "warnings" : JSONARRAYOF({"type":STR(<EXCESS_AMOUNT,LACK_BASE,LACK_MIDDLE,LACK_TOP>), "targetOfWarning":OPTINT})
+"bestAdjectives" : JSONARAYOF({"fr":STR, "en":STR,..., "strength":FLOAT})
 }
 
 Requête:
-GET /suggestion/?ingredients=INTARRAY(1,2,3...)&[amounts=INTARRAY(1,2,3...)] &
+GET /suggestions/?ingredients=INTARRAY(1,2,3...)&[amounts=INTARRAY(1,2,3...)] &
 note_type=<BASE,MIDDLE,TOP>&
 [desirability_type=<BASIC,SIGNIFICATIVE,UNGENDERED>]&
 [freq_min=INT]
 
 Réponse:
-{
-"NotesSuggestions":JSONARRAYOF({"desirabilityValue":FLOAT,"ingredient":INGREDIENT,"suggestedAmount":INT})
-}
+JSONARRAYOF({"desirabilityValue":FLOAT,"ingredient":INGREDIENT,"suggestedAmount":INT})
+

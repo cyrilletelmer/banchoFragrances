@@ -19,8 +19,9 @@ class GetIngredientsTransaction extends Transaction
 			$vIngredient = $this->getPermanentMemoryHandler()->getIngredientById($inResourceID);
 			if(isset($vIngredient))
 				{
+				$vTranslatableAdjectives = $this->getPermanentMemoryHandler()->getTranslatableAdjectives($vIngredient->mIngredientID);
 				$vTranslatableNames = $this->getPermanentMemoryHandler()->getTranslatablesByTextID($vIngredient->mNameID);
-				$vIngredientDisplayable = new IngredientDisplayable($vIngredient,$vTranslatableNames,null);
+				$vIngredientDisplayable = new IngredientDisplayable($vIngredient,$vTranslatableNames,$vTranslatableAdjectives);
 				$vOutArray[0] = $vIngredientDisplayable->getDisplay();
 				return $this->createOutput(ErrorCodes::OK, " ingredient for one id ", $vOutArray);
 				}

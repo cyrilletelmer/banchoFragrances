@@ -14,7 +14,7 @@ interface PermanentMemoryHandler
 	
 	public function getCorrelationsFromIngredientID(int $inIngredientID) :array;
 	
-	public function getCorrelation(int $inIngredientID1, int $inIngredientID2) : Correlation;
+	public function getCorrelation(int $inIngredientID1, int $inIngredientID2, string $inCorrelationType="BASIC") : Correlation;
 	
 	public function getTranslatableAdjectives(int $inIngredientId): array;//of Translatable not of Adjective
 	}

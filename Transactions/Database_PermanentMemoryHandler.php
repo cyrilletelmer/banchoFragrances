@@ -8,9 +8,9 @@ class Database_PermanentMemoryHandler implements PermanentMemoryHandler
 		{
 		$this->mPDO = new PDO
 			(
-			'---', // host, database
-			'---', // user goes here
-			'---', // password goes here
+			'--', // host, database
+			'--', // user goes here
+			'--', // password goes here
 			array
 				(
 				PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -134,7 +134,7 @@ class Database_PermanentMemoryHandler implements PermanentMemoryHandler
 	
 	
 
-	public function getCorrelation(int $inIngredientID1, int $inIngredientID2) : Correlation
+	public function getCorrelation(int $inIngredientID1, int $inIngredientID2, string $inCorrelationType="BASIC") : Correlation
 		{
 		$outData = new Correlation;
 		$outData->mCorrelationID = 0;
@@ -142,10 +142,11 @@ class Database_PermanentMemoryHandler implements PermanentMemoryHandler
 		$outData->mIngredient2 = 0;
 		$outData->mCorrelationType = "FAILED";
 		$outData->mValue =-2.0;
-		$vStmt = $this->mPDO->prepare("SELECT * FROM Xproject_correlations where ingredient_one = ? AND ingredient_two = ? ;");
+		$vStmt = $this->mPDO->prepare("SELECT * FROM Xproject_correlations where ingredient_one = ? AND ingredient_two = ? AND correlation_type = ?;");
 		//echo "id $inId";
 		$vStmt->bindParam(1, $inIngredientID1, PDO::PARAM_INT);
 		$vStmt->bindParam(2, $inIngredientID2, PDO::PARAM_INT);
+		$vStmt->bindParam(3, $inCorrelationType, PDO::PARAM_STR);
 		$vStmt->execute();
 		foreach ($vStmt as $vRow)
 			{
